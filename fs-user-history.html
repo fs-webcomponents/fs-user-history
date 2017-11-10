@@ -1,0 +1,90 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../neon-animation/web-animations.html">
+<link rel="import" href="../paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-item/paper-item-body.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../fs-request/fs-request.html">
+<link rel="import" href="fs-user-mixin.html">
+
+<dom-module id="fs-user-history">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <paper-dropdown-menu id="menu" label="History" no-label-float horizontal-align="left">
+      <paper-listbox id="list" slot="dropdown-content">
+        <template is="dom-repeat" items="{{persons}}">
+          <paper-item label="{{item.display.name}}" on-tap="_selectPerson">
+            <paper-item-body two-line>
+              <div>{{item.display.name}}</div>
+              <div secondary>{{item.id}}</div>
+            </paper-item-body>
+          </paper-item>
+        </template>
+      </paper-listbox>
+    </paper-card>
+    <fs-request
+      id="request"
+      require-authentication
+      on-response="_handleResponse"></fs-request>
+  </template>
+
+  <script>
+    /**
+     * `fs-user-history`
+     * 
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class FsUserHistory extends FsUserMixin(Polymer.Element) {
+      static get is() { return 'fs-user-history'; }
+      static get properties() {
+        return {
+          
+          /** List of persons in the history */
+          persons: {
+            type: Array,
+            value: function(){
+              return [];
+            }
+          }
+        };
+      }
+      
+      static get observers() {
+        return [
+          '_userIdChanged(userId)'
+        ];
+      }
+      
+      _userIdChanged(userId) {
+        if(userId) {
+          this.$.request.url = `/platform/users/${userId}/history`;
+          this.$.request.headers = {
+            Accept: 'application/x-gedcomx-atom+json'
+          };
+          this.$.request.generateRequest();
+        }
+      }
+      
+      _handleResponse(e) {
+        const response = e.detail.response;
+        if(response.data && Array.isArray(response.data.entries)) {
+          this.persons = response.data.entries.filter((entry) => {
+            // Not all entries have content, likely caused be a person being deleted
+            return entry.content;
+          }).map((entry) => {
+            return entry.content.gedcomx.persons[0];
+          });
+        }
+      }
+    }
+
+    window.customElements.define(FsUserHistory.is, FsUserHistory);
+  </script>
+</dom-module>

@@ -1,0 +1,22 @@
+{
+  "name": "fs-user-history",
+  "main": "fs-user-history.html",
+  "dependencies": {
+    "polymer": "Polymer/polymer#^2.0.0",
+    "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^2.0.0",
+    "paper-item": "PolymerElements/paper-item#^2.0.0",
+    "paper-listbox": "PolymerElements/paper-listbox#^2.0.0",
+    "fs-request": "fs-webcomponents/fs-request#^4.2.0",
+    "fs-api-aware": "fs-webcomponents/fs-api-aware#^4.0.0",
+    "web-animations-js": "web-animations/web-animations-js#^2.3.1"
+  },
+  "devDependencies": {
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
+    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
+    "fs-signin": "fs-webcomponents/fs-signin#^4.0.0"
+  },
+  "resolutions": {
+    "polymer": "^2.0.0"
+  }
+}

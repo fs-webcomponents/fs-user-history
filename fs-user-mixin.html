@@ -1,0 +1,61 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../fs-api-aware/fs-api-aware.html">
+<link rel="import" href="../fs-request/fs-request.html">
+
+<script>
+  /**
+   * `fs-user-mixin`
+   * 
+   *
+   * @customElement
+   * @polymer
+   * @demo demo/index.html
+   */
+  const FsUserMixin = Polymer.dedupingMixin((superClass) => class extends FSApiAwareMixin(superClass) { 
+      
+    static get properties() {
+      return {
+        userId: {
+          type: String,
+          notify: true
+        },
+        
+        user: {
+          type: Object,
+          notify: true
+        },
+        
+        /** Whether the API request is loading */
+        loading: {
+          type: Boolean,
+          value: false
+        }
+      };
+    }
+    
+    ready() {
+      super.ready();
+      if(!this.user) {
+        this._loadUser();
+      }
+    }
+    
+    _loadUser() {
+      const request = new FSRequest();
+      request.url = `/platform/users/current`;
+      request.requireAuthentication = true;
+      request.addEventListener('response', this._handleUserResponse.bind(this));
+      request.ready();
+      request.generateRequest();
+    }
+    
+    _handleUserResponse(e) {
+      const response = e.detail.response;
+      if(response.data && Array.isArray(response.data.users)) {
+        this.user = response.data.users[0];
+        this.userId = this.user.id;
+      }
+    }
+  
+  });
+</script>
