@@ -1,6 +1,7 @@
 {
   "name": "fs-user-history",
   "main": "fs-user-history.html",
+  "version": "4.0.0",
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^2.0.0",
