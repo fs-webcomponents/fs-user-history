@@ -28,6 +28,7 @@
     </paper-card>
     <fs-request
       id="request"
+      loading="{{loading}}"
       require-authentication
       on-response="_handleResponse"></fs-request>
   </template>
@@ -52,6 +53,18 @@
             value: function(){
               return [];
             }
+          },
+          
+          /** Whether the initial list is loading */
+          loading: {
+            type: Boolean,
+            value: false
+          },
+          
+          /** Whether a new person is being added */
+          updating: {
+            type: Boolean,
+            value: false
           }
         };
       }
@@ -62,14 +75,55 @@
         ];
       }
       
+      addPerson(personId) {
+        if(personId && this.userId) {
+          this.updating = true;
+          const request = new FSRequest();
+          request.url = this._historyUrl(this.userId);
+          request.headers = {
+            'Content-Type': 'application/x-gedcomx-atom+json',
+            Accept: 'application/x-gedcomx-atom+json'
+          };
+          request.method = 'POST';
+          request.body = {
+            entries : [{
+              id : personId
+            }]
+          };
+          request.addEventListener('response', (e) => {
+            this.updating = false;
+            const response = e.detail.response;
+            if(response && response.data && response.data.entries) {
+              
+              // Remove the person if they are already in the list
+              for(let i = 0; i < this.persons.length; i++) {
+                if(this.persons[i].id === personId) {
+                  this.splice('persons', i, 1);
+                  break;
+                }
+              }
+              
+              // Now we can add the new person to the start of the list
+              this.unshift('persons', response.data.entries[0].content.gedcomx.persons[0]);
+            }
+          });
+          request.ready();
+          request.generateRequest();
+        }
+      }
+      
       _userIdChanged(userId) {
         if(userId) {
-          this.$.request.url = `/platform/users/${userId}/history`;
+          this.$.request.url = this._historyUrl(userId);
           this.$.request.headers = {
             Accept: 'application/x-gedcomx-atom+json'
           };
           this.$.request.generateRequest();
         }
+      }
+      
+      _historyUrl(userId) {
+        return `/platform/users/${userId}/history`;
       }
       
       _handleResponse(e) {

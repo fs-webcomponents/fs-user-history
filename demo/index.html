@@ -25,7 +25,17 @@
       <h3>Basic fs-user-history demo</h3>
       <demo-snippet>
         <template>
-          <fs-user-history></fs-user-history>
+          <fs-user-history id="history"></fs-user-history>
+          <paper-input id="person" label="Person ID"></paper-input>
+          <paper-button id="add">Add Person</paper-button>
+          <script>
+            document.getElementById('add').addEventListener('click', () => {
+              const personId = document.getElementById('person').value;
+              if(personId) {
+                document.getElementById('history').addPerson(personId);
+              }
+            });
+          </script>
         </template>
       </demo-snippet>
     </div>
