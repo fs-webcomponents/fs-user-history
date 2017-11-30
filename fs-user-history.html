@@ -28,11 +28,13 @@
     </paper-card>
     <fs-request
       id="loadRequest"
+      client-name="[[clientName]]"
       loading="{{loading}}"
       require-authentication
       on-response="_handleLoadResponse"></fs-request>
     <fs-request
       id="addPersonRequest"
+      client-name="[[clientName]]"
       require-authentication
       on-response="_handleAddPersonResponse"></fs-request>
   </template>
